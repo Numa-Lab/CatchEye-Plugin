@@ -1,0 +1,5 @@
+name: Catcheye
+version: '${project.version}'
+main: com.github.bun133.catcheyeplugin.CatcheyePlugin
+api-version: 1.16
+authors: [ Bun133 ]
