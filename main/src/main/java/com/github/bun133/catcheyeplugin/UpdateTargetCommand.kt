@@ -7,17 +7,20 @@ class UpdateTargetCommand : Command("update") {
     init {
         description("ターゲットを更新する")
         usage {
-            entityArgument("Player")
+            entityArgument("operatePlayer")
+            entityArgument("targetPlayer")
 
             executes {
-                val list = typedArgs[0] as List<*>
-                val p = list.filterIsInstance<Player>().firstOrNull()
-                if (p == null) {
+                val o = typedArgs[0] as List<*>
+                val op = o.filterIsInstance<Player>().firstOrNull()
+                val t = typedArgs[1] as List<*>
+                val tp = t.filterIsInstance<Player>().firstOrNull()
+                if (op == null || tp == null) {
                     fail("プレイヤーが見つかりませんでした")
                     return@executes
                 } else {
-                    success("ターゲットを${p.name}に更新しました")
-                    (plugin as CatcheyePlugin).updateTarget(p)
+                    success("${op.name}のターゲットを${tp.name}に更新しました")
+                    (plugin as CatcheyePlugin).updateTarget(op,tp)
                 }
             }
         }
