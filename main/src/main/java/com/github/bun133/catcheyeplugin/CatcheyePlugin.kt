@@ -6,6 +6,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
+import java.nio.ByteBuffer
 
 class CatcheyePlugin : JavaPlugin() {
 
@@ -15,12 +16,26 @@ class CatcheyePlugin : JavaPlugin() {
         }
     }
 
-
+    private lateinit var rejector: ModRejector
     override fun onEnable() {
+        rejector = ModRejector.getInstance(this, rejectTick)
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, channel)
         Bukkit.getMessenger()
-            .registerIncomingPluginChannel(this, channel) { _, _, _ ->
-                // Nothing to do
+            .registerIncomingPluginChannel(this, channel) { _, player, message ->
+                val buf = PacketBuffer(ByteBuffer.wrap(message))
+                val packetId = buf.readByte() // packet id
+                val str = buf.readString()
+                val gson = Gson()
+                try {
+                    val obj = gson.fromJson(str, HelloPacket::class.java)
+                    if (obj.key == joinMagic) {
+                        // Join Packet
+                        rejector.resolve(player)
+                    }
+                } catch (e: Exception) {
+                    // Ignore
+                    e
+                }
             }
 
         Bukkit.getServer().scheduler.runTaskTimer(this, Runnable {
@@ -57,5 +72,13 @@ class CatcheyePlugin : JavaPlugin() {
 
     companion object {
         const val channel = "catcheye:position"
+        const val joinMagic = "joined!"
+        const val rejectTick = 20 * 5
+    }
+}
+
+private fun PacketBuffer.writeBytes(bytes: ByteArray) {
+    bytes.forEach {
+        this.buf.put(it)
     }
 }

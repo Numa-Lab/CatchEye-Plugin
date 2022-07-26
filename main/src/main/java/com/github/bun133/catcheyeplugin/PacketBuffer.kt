@@ -4,7 +4,7 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
 
-class PacketBuffer private constructor(private val buf: ByteBuffer) {
+class PacketBuffer(val buf: ByteBuffer) {
     @JvmOverloads
     constructor(length: Int = maxLength) : this(ByteBuffer.allocate(length))
 
@@ -70,7 +70,7 @@ class PacketBuffer private constructor(private val buf: ByteBuffer) {
     }
 
     fun readString(): String {
-        val i = readVarInt()
+        val i = readByte().toInt()  // readVarIntがおかしいのかもしれない
         return if (i > maxLength * 4) {
             throw RuntimeException("The received encoded string buffer length is longer than maximum allowed (" + i + " > " + maxLength * 4 + ")")
         } else if (i < 0) {
