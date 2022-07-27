@@ -47,7 +47,7 @@ class CatcheyePlugin : JavaPlugin() {
                     sendPacket(it, UpdatePacket("", Vector(0, 0, 0)))   // Clear Packet
                 }
             }
-        }, 0, 20)
+        }, 0, 10)
     }
 
     // [見てる側のぷれいやー] -> [見られている側のぷれいやー]
